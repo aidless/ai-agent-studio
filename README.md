@@ -1,5 +1,7 @@
 # AI Agent Studio v3.0
 
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 **多 Agent 协作平台** - LangChain + ChromaDB RAG + DeepSeek LLM
 
 ## 技术栈
