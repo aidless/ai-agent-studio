@@ -10,7 +10,7 @@
 | Agent框架 | LangChain (Tool Use + Memory + Chain) |
 | 向量数据库 | ChromaDB (持久化) |
 | LLM | DeepSeek Chat (兼容 OpenAI API) |
-| 部署 | Docker Compose |
+| 部署 | 本地运行（Docker Compose 规划中，暂未附配置） |
 
 ## 三个专业 Agent
 
@@ -29,10 +29,13 @@ python -m app.main
 
 浏览器打开 http://localhost:8000/docs
 
-## Docker 部署
+## Docker 部署（规划中）
+
+当前仓库暂未附 Dockerfile / compose 配置，请先本地运行：
 
 ```bash
-docker compose up -d
+pip install -r requirements.txt
+python -m app.main
 ```
 
 ## API 示例
