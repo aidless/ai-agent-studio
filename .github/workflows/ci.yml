@@ -26,5 +26,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pytest
+          # requirements.txt omits sentence-transformers, but app/rag/vector_store.py:17
+          # builds chromadb's SentenceTransformerEmbeddingFunction("all-MiniLM-L6-v2"),
+          # which imports sentence_transformers (and therefore torch) at call time and
+          # raises ValueError when it is absent. The CPU-only torch index keeps this
+          # from pulling ~2GB of CUDA wheels into a runner that has no GPU. The missing
+          # manifest line is a repository fix and is reported separately.
+          pip install --index-url https://download.pytorch.org/whl/cpu torch
+          pip install sentence-transformers
       - name: Run the test suite
         run: python -m pytest -q
