@@ -74,6 +74,12 @@ jobs:
           fi
           echo "collection passed"
           echo "--- corrupting $target ---"
+          # The baseline pass above left a .pyc for every tracked source, and
+          # compileall treats a cache as fresh whenever int(st_mtime) still matches
+          # without comparing file size. A corruption landing in the same
+          # wall-clock second is therefore skipped and the gate calls a broken file
+          # clean -- which is how this control failed on its first run.
+          find . -name '__pycache__' -type d -prune -exec rm -rf {} +
           cp "$target" /tmp/test.bak
           printf '\n\ndef __mutation_control__(:\n' >> "$target"
           # Collection only. The full suite here installs sentence-transformers and
