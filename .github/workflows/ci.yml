@@ -87,7 +87,17 @@ jobs:
           # window — so asserting on a full run would time out rather than demonstrate
           # anything. A syntax error breaks collection, which is the same gate the real
           # run goes through before any test executes.
-          if python -m pytest -q --collect-only; then
+          # pytest >= 9 returns exit code 0 even when collection fails with
+          # --collect-only (it prints "1 error" and exits 0), so an exit-code-only
+          # assertion here passes on a broken file. Assert on both: non-zero exit
+          # OR pytest's collection-error wording.
+          # The pattern must be pytest's exact phrasing. Grepping for a bare "error"
+          # matches https://errors.pydantic.dev/... inside the pydantic
+          # DeprecationWarning, which makes the control fail on a CLEAN tree -- the
+          # opposite of what it is for.
+          collect_out=$(python -m pytest -q --collect-only 2>&1)
+          collect_rc=$?
+          if [ "$collect_rc" -eq 0 ]              && ! printf '%s' "$collect_out" | grep -q "ERROR collecting"; then
             echo "FAIL: pytest collected a test file with a syntax error"
             exit 1
           fi
