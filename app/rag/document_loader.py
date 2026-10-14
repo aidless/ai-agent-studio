@@ -9,8 +9,8 @@ from app.rag.vector_store import VectorStore
 
 
 class DocumentLoader:
-    def __init__(self):
-        self.store = VectorStore()
+    def __init__(self, embedding_fn=None):
+        self.store = VectorStore(embedding_fn=embedding_fn)
 
     def load_directory(self, directory: str = None) -> int:
         path = Path(directory or settings.knowledge_dir)

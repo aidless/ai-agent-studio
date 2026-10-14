@@ -3,29 +3,54 @@
 These are smoke scripts, not unit tests: they print and return None, so pytest collects
 them but they cannot fail on a wrong answer. Do not read a green run here as
 evidence the agents work -- the printouts are the evidence.
+
+Embedding: the RAG smoke path injects the deterministic hash encoder
+(`app.rag.vector_store._hash_embedding`) instead of sentence-transformers /
+the chromadb ONNX default. That keeps CI free of an ~80MB model download and
+of torch, and makes the run reproducible. The encoder is non-semantic; a
+result line here says nothing about retrieval quality.
 """
 import sys
 sys.path.insert(0, ".")
 
+import pytest
+
 from app.config import settings
 from app.rag.document_loader import DocumentLoader
-from app.rag.vector_store import VectorStore
+from app.rag.vector_store import VectorStore, _hash_embedding
 from app.agents.orchestrator import Orchestrator
 
+NEEDS_KEY = pytest.mark.skipif(
+    not settings.deepseek_api_key,
+    reason="DEEPSEEK_API_KEY unset: the agent path calls a real LLM, so it is skipped, not faked",
+)
 
-def test_rag():
+
+def test_rag(tmp_path, monkeypatch):
     print("=" * 50)
     print("测试 1: RAG 向量检索")
     print("=" * 50)
-    loader = DocumentLoader()
+    monkeypatch.setattr(settings, "chroma_persist_dir", str(tmp_path / "chroma"))
+    loader = DocumentLoader(embedding_fn=_hash_embedding)
     count = loader.load_directory()
     print(f"[OK] 加载 {count} 个文档片段到向量数据库")
+    print(f"[OK] encoder: {loader.store.embedding_name}")
 
     results = loader.search("RAG 是什么")
     print(f"[OK] 检索到 {len(results)} 条相关文档")
     for r in results[:2]:
         print(f"  - {r['content'][:100]}...")
     print()
+
+
+def test_hash_embedding_is_deterministic_and_normalised():
+    a = _hash_embedding(["同一段文字"])
+    b = _hash_embedding(["同一段文字"])
+    assert a == b
+    assert len(a[0]) == 384
+    norm = sum(v * v for v in a[0]) ** 0.5
+    assert abs(norm - 1.0) < 1e-6
+
 
 # `task_type` and `content` were function parameters, so pytest read them as
 # fixtures and the run died at collection with
@@ -35,7 +60,8 @@ def test_rag():
 # they take no arguments. If they are ever meant to run under pytest they need
 # real assertions -- a test that only prints cannot fail on a wrong answer, which
 # is why the suite above was already green while this one errored.
-def test_agent(task_type, content):
+@NEEDS_KEY
+def test_agent(task_type: str = "research", content: str = "AI Agent Studio 的 RAG 架构是什么样的？"):
     print("=" * 50)
     print(f"测试: Agent ({task_type})")
     print("=" * 50)
@@ -48,8 +74,9 @@ def test_agent(task_type, content):
         print(f"[输出] {result['result'][:500]}...")
     print()
 
+
 if __name__ == "__main__":
     test_rag()
-    test_agent("research", "AI Agent Studio 的 RAG 架构是什么样的？")
+    test_agent()
     test_agent("writer", "为 AI Agent Studio 项目生成一份项目日报")
     print("全部测试完成!")
