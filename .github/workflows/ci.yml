@@ -95,9 +95,13 @@ jobs:
           # matches https://errors.pydantic.dev/... inside the pydantic
           # DeprecationWarning, which makes the control fail on a CLEAN tree -- the
           # opposite of what it is for.
-          collect_out=$(python -m pytest -q --collect-only 2>&1)
-          collect_rc=$?
-          if [ "$collect_rc" -eq 0 ]              && ! printf '%s' "$collect_out" | grep -q "ERROR collecting"; then
+          # This step runs under `bash -e`, so a bare `var=$(cmd)` aborts the whole
+          # step when cmd exits non-zero -- which is exactly what a corrupted file
+          # produces, and then this check never runs at all. `|| collect_rc=$?`
+          # records the exit code without tripping -e.
+          collect_rc=0
+          collect_out=$(python -m pytest -q --collect-only 2>&1) || collect_rc=$?
+          if [ "$collect_rc" -eq 0 ] && ! printf '%s' "$collect_out" | grep -q "ERROR collecting"; then
             echo "FAIL: pytest collected a test file with a syntax error"
             exit 1
           fi
