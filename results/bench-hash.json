@@ -1,0 +1,13 @@
+{
+  "encoder": "hash-trigram",
+  "n_docs": 5,
+  "n_chunks": 12,
+  "top_k": 5,
+  "load_seconds": 0.0534,
+  "index_seconds": 0.0,
+  "search_seconds": 0.0079,
+  "total_seconds": 0.5837,
+  "deterministic": true,
+  "l2_norm": 1.0,
+  "note": "hash encoder is NON-SEMANTIC; timings prove wiring, not quality"
+}

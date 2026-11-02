@@ -104,6 +104,26 @@ python -m pytest -q    # 2 passed, 1 skipped
 - 12 个文档片段被 `DocumentLoader.load_directory()` 加载（可复算：见下）。
 - 真实 LLM 路径需要 Key；无 Key 时 RAG 与编排仍可离线运行（哈希编码器）。
 
+## 相关工作与本仓差异
+
+本仓是**多 Agent 协作平台演示**（3 专业 Agent + Orchestrator），不是通用 agent
+框架。与三种常见替代相比，它的区别是：
+
+1. **RAG 检索与 Agent 编排解耦**：三个专业 Agent 共享一个 ChromaDB 向量库，
+   Researcher 走 `search_knowledge`、Writer 走 `search_context`，检索层与
+   Agent 编排层分开——对比直接把检索埋进 agent 的"检索即工具"实现，本仓让
+   检索可独立注入编码器（`_hash_embedding`）做冒烟，不污染编排测试。
+2. **确定性可复现冒烟**：注入哈希编码器（非语义）后 load→store→retrieve
+   链路零模型下载、离线可复现；对比需要 ~80MB 模型下载的默认路径，本仓让 CI
+   不依赖网络与 torch。
+3. **无 Key 跳过不伪造**：真实 LLM 路径需要 `DEEPSEEK_API_KEY`，无 Key 时
+   `test_agent` **跳过而非伪造**——对比"mock 出绿"的实现，本仓把"没测"如实报
+   为"没测"。
+
+诚实对比：通用多 Agent 框架（LangGraph/LangChain 编排）提供的是编排原语；
+本仓是**演示平台**（3 固定 Agent + 固定管道），不提供框架级抽象，也不声称
+检索质量或模型输出质量更高——那两样本仓未测（非语义哈希 + 无 Key 跳过）。
+
 ## 证明什么 / 不证明什么
 
 **证明：** FastAPI 服务可启动；RAG 向量检索链路在注入确定性编码器后可跑通；
@@ -112,6 +132,37 @@ python -m pytest -q    # 2 passed, 1 skipped
 **不证明：** 知识库检索质量（`_hash_embedding` 是非语义哈希，测试里的检索结果
 只证明链路通，不证明相关性）；模型输出质量（`test_agent` 无 Key 即跳过，且
 无 Key 时不伪造结果）；生产可靠性（无真实用户流量、无 SLO、无监控）。
+
+## Fail-closed 行为
+
+真实 LLM 路径是 **fail-closed** 的：`test_agent` 在无 `DEEPSEEK_API_KEY` 时
+**跳过而非伪造**（`NEEDS_KEY = pytest.mark.skipif(...)`），不产生假的"通过"。
+RAG 冒烟同样 fail-closed：默认编码器路径在 `vector_store.py:17` 按需导入
+sentence-transformers，无 torch/无网络时**降级到哈希编码器**而非崩溃，且
+`_hash_embedding` 的 docstring 明确"绝不可用于能力声明"——检索链路通 ≠ 检索
+质量好。换句话说：**证据不足时选择"不声称"，而不是"瞎声称"**。
+
+## RAG 冒烟基准（哈希编码器，离线可复算）
+
+`bench_rag_wiring.py` 测的是**接线成本**（load→store→retrieve 的耗时与确定性），
+不是质量：
+
+```bash
+python3 bench_rag_wiring.py
+```
+
+| 指标 | 值 |
+|---|---|
+| encoder | hash-trigram |
+| n_docs / n_chunks | 5 / 12 |
+| load 耗时 | 0.0534s |
+| search 耗时 | 0.0079s |
+| 总耗时 | 0.5837s |
+| 编码确定性 | true（同文本同向量） |
+| L2 范数 | 1.0 |
+
+注意：这些数字**只证明链路通且快**，不证明相关性——哈希编码器非语义。结果
+落盘 `results/bench-hash.json`，可用上述命令复算。
 
 ## 复现
 
