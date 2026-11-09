@@ -1,5 +1,7 @@
 # AI Agent Studio v3.0
 
+[![CI](https://github.com/aidless/ai-agent-studio/actions/workflows/ci.yml/badge.svg)](https://github.com/aidless/ai-agent-studio/actions/workflows/ci.yml)
+
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 **多 Agent 协作平台** - LangChain + ChromaDB RAG + DeepSeek LLM
