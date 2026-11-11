@@ -1,5 +1,7 @@
 # AI Agent Studio v3.0
 
+> **English TL;DR**: 中文优先的多 Agent 协作平台（FastAPI + LangChain + ChromaDB + DeepSeek）。本 pass 实跑 `pytest tests/ -q` 得 `2 passed, 1 skipped`（耗时见下表 live 重跑），但测试文件自身声明这些是 smoke scripts（`they cannot fail on a wrong answer`）——绿灯不是 agents 可用的证据。真实 LLM 调用与服务 HTTP 自检为 **NOT YET MEASURED**（需真实 key）。
+
 [![CI](https://github.com/aidless/ai-agent-studio/actions/workflows/ci.yml/badge.svg)](https://github.com/aidless/ai-agent-studio/actions/workflows/ci.yml)
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -84,3 +86,37 @@ curl -X POST http://localhost:8000/api/v1/agent/pipeline \
 | `tests/` | pytest 单测（2 passed / 1 skipped，无需 API key） |
 | `data/chroma/` | ChromaDB 持久化向量库 |
 | `docs/` | Swagger 截图等文档资产 |
+
+## U1 live re-verification (executed for this pass)
+
+| Live check | Result | Source |
+|---|---|---|
+| `python3 -m pytest tests/ -q` | `2 passed, 1 skipped, 32 warnings in 1.37s` (exit 0) | this pass |
+| HTTP routes defined | 8 (3 Agent + 4 RAG + 1 System) | `app/api/routes.py:33-79` |
+| Agents defined | 3 (`researcher` / `coder` / `writer`) | `agent_studio.py:122-137` |
+| Knowledge markdown files | 5 | live `glob data/knowledge/*.md` |
+| `data/chroma/chroma.sqlite3` table counts | embeddings = 0, segments = 2 | live `sqlite3 select count(*)` |
+
+**Honest caveat, quoted from the test file itself** — `tests/test_agents.py:4`:
+these are smoke scripts, *not* unit tests; they print and return None, so pytest
+collects them but `they cannot fail on a wrong answer`. A green run here is not
+evidence the agents work. The skip mechanism for the agent path is at
+`tests/test_agents.py:30` (`DEEPSEEK_API_KEY unset` → skipped, not faked).
+
+**Evidence conflict, recorded as-is**: `README.md:75` says the repo ships
+"an index of 11 document chunks", but the committed `data/chroma/chroma.sqlite3`
+live-counts **embeddings = 0, segments = 2** today, and the
+`"documents":11` self-check at `README.md:52` is a historical curl output,
+not re-runnable from this count. Treat 11 as the historical value; the live sqlite
+count is 0.
+
+**NOT YET MEASURED in this pass**: real DeepSeek LLM calls (`/api/v1/agent/run`,
+`/pipeline`), the service boot + HTTP self-check, and any retrieval-quality claim.
+
+**Reproduce the live checks above**:
+
+```bash
+python3 -m pytest tests/ -q
+grep -c "@router." app/api/routes.py
+python3 -c "import sqlite3;c=sqlite3.connect('data/chroma/chroma.sqlite3');print(c.execute('select count(*) from embeddings').fetchone()[0])"
+```
