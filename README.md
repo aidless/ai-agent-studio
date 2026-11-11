@@ -89,6 +89,8 @@ curl -X POST http://localhost:8000/api/v1/agent/pipeline \
 
 ## U1 live re-verification (executed for this pass)
 
+<!-- figure: docs/api-docs.png (existing Swagger screenshot; a fresh capture is NOT YET MEASURED in this pass) -->
+
 | Live check | Result | Source |
 |---|---|---|
 | `python3 -m pytest tests/ -q` | `2 passed, 1 skipped, 32 warnings in 1.37s` (exit 0) | this pass |
