@@ -49,14 +49,6 @@ ai-agent-studio/
 | **Coder** | 代码审查 + Bug检测 + 改进建议 | read_file, list_directory |
 | **Writer** | 日报/周报/技术文档生成 | search_context, save_file |
 
-## 三个专业 Agent
-
-| Agent | 职责 | 工具 |
-|-------|------|------|
-| **Researcher** | 知识库检索 + 深度分析 | search_knowledge, read_file, list_directory |
-| **Coder** | 代码审查 + Bug检测 + 改进建议 | read_file, list_directory |
-| **Writer** | 日报/周报/技术文档生成 | search_context, save_file |
-
 ![API Docs](docs/api-docs.png)
 
 ## Quickstart
