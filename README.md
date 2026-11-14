@@ -251,3 +251,24 @@ python3 -m pytest tests/ -q
 grep -c "@router." app/api/routes.py
 python3 -c "import sqlite3;c=sqlite3.connect('data/chroma/chroma.sqlite3');print(c.execute('select count(*) from embeddings').fetchone()[0])"
 ```
+
+## 验收题库与复算
+
+`eval/cases.jsonl` 是 20 条可执行验收题，覆盖九个口径（settings 默认值、hash embedding 维度/归一化/异常、
+两种分块器的块数与块长、Orchestrator 的未知 agent 与 pipeline 取值、文件工具的三条边界、路由数量与前缀、
+`results/bench-hash.json` 的记录值、Chromadb sqlite 实际行数、README 本节自身）。期望值不是抄文档，而是
+**调用本仓模块 / 解析本仓数据文件现算**：18 条为 `expr`/`raises`（2 条 `raises`：非字符串
+`_hash_embedding` → `AttributeError`、`read_file(None)` → `TypeError`），2 条 `doc` 断言源码与文档里的固定串。
+
+```bash
+python3 eval/run_cases.py            # 20/20 cases passed
+python3 eval/run_cases.py --save     # 顺带把结果写进 eval/run-report.json
+python3 eval/run_cases.py --selftest # 篡改一条期望值，必须变红（19/20，证明这套题会失败）
+```
+
+**数字如何复算**：`eval/run-report.json` 里每条 case 都带 `id` / `axis` / `detail`，
+把 `detail` 与 `cases.jsonl` 的 `verify` 代码一起看，就能从源码复现该数字；
+`--save` 重跑一次即可重建整份报告，不需要手工抄数。
+
+**失败归因**：`run_cases.py` 不只报通过率，失败时按 `axis` 汇总（例如
+`rag.chunking: 1 条 —— CHK-02`），直接指出是哪个模块的哪个口径坏了。

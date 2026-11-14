@@ -1,0 +1,129 @@
+{
+ "total": 20,
+ "passed": 20,
+ "failed": 0,
+ "selftest": false,
+ "failed_by_axis": {},
+ "results": [
+  {
+   "id": "CFG-01",
+   "axis": "config",
+   "ok": true,
+   "detail": "2048"
+  },
+  {
+   "id": "CFG-02",
+   "axis": "config",
+   "ok": true,
+   "detail": "https://api.deepseek.com/v1"
+  },
+  {
+   "id": "EMB-01",
+   "axis": "rag.embedding",
+   "ok": true,
+   "detail": "384"
+  },
+  {
+   "id": "EMB-02",
+   "axis": "rag.embedding",
+   "ok": true,
+   "detail": "1.0"
+  },
+  {
+   "id": "EMB-03",
+   "axis": "rag.embedding",
+   "ok": true,
+   "detail": "raised AttributeError"
+  },
+  {
+   "id": "CHK-01",
+   "axis": "rag.chunking",
+   "ok": true,
+   "detail": "3"
+  },
+  {
+   "id": "CHK-02",
+   "axis": "rag.chunking",
+   "ok": true,
+   "detail": "3"
+  },
+  {
+   "id": "CHK-03",
+   "axis": "rag.chunking",
+   "ok": true,
+   "detail": "600"
+  },
+  {
+   "id": "ORC-01",
+   "axis": "agents.routing",
+   "ok": true,
+   "detail": "Unknown agent: nope"
+  },
+  {
+   "id": "ORC-02",
+   "axis": "agents.routing",
+   "ok": true,
+   "detail": "OUT:task"
+  },
+  {
+   "id": "ORC-03",
+   "axis": "agents.routing",
+   "ok": true,
+   "detail": "coder"
+  },
+  {
+   "id": "TOOL-01",
+   "axis": "tools.files",
+   "ok": true,
+   "detail": "文件不存在: nope.md"
+  },
+  {
+   "id": "TOOL-02",
+   "axis": "tools.files",
+   "ok": true,
+   "detail": "5000"
+  },
+  {
+   "id": "TOOL-03",
+   "axis": "tools.files",
+   "ok": true,
+   "detail": "raised TypeError"
+  },
+  {
+   "id": "API-01",
+   "axis": "api.routes",
+   "ok": true,
+   "detail": "8"
+  },
+  {
+   "id": "API-02",
+   "axis": "api.routes",
+   "ok": true,
+   "detail": "router = APIRouter(prefix=\"/api/v1\")"
+  },
+  {
+   "id": "BEN-01",
+   "axis": "data.bench",
+   "ok": true,
+   "detail": "12"
+  },
+  {
+   "id": "BEN-02",
+   "axis": "data.bench",
+   "ok": true,
+   "detail": "hash-trigram"
+  },
+  {
+   "id": "CHR-01",
+   "axis": "data.chroma",
+   "ok": true,
+   "detail": "0"
+  },
+  {
+   "id": "DOC-01",
+   "axis": "docs.readme",
+   "ok": true,
+   "detail": "## 验收题库与复算"
+  }
+ ]
+}
