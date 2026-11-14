@@ -1,5 +1,4 @@
 """ChromaDB 向量存储 - RAG 核心"""
-import os
 import chromadb
 from chromadb.config import Settings as ChromaSettings
 from app.config import settings

@@ -1,5 +1,4 @@
 """文档加载器 - 支持 txt/md/json/py/html 文件"""
-import os
 from pathlib import Path
 from app.config import settings
 from app.rag.store import VectorStore

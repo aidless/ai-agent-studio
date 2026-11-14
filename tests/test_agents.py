@@ -33,7 +33,6 @@ NEEDS_KEY = pytest.mark.skipif(
 
 def _rag_smoke(tmp_dir, set_persist_dir):
     """Shared body of the RAG smoke check, so --main and pytest run one code path."""
-    from app.config import settings
     from app.rag.document_loader import DocumentLoader
     from app.rag.vector_store import _hash_embedding
 

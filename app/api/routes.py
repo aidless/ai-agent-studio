@@ -1,12 +1,10 @@
 """API 路由 - RESTful 接口"""
-from fastapi import APIRouter, HTTPException, Query
-from fastapi.responses import StreamingResponse
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
-from typing import Optional, AsyncGenerator
+from typing import Optional
 from app.agents.orchestrator import Orchestrator
 from app.rag.loader import DocumentLoader
 from app.rag.store import VectorStore
-import json, asyncio
 
 router = APIRouter(prefix="/api/v1")
 orch = Orchestrator()

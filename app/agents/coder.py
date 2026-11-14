@@ -1,8 +1,6 @@
 """代码审查 Agent - Bug 检测 + 质量评估 + 改进建议"""
-from langchain_core.tools import tool
 from app.agents.base import BaseAgent
 from app.tools.file_tools import read_file, list_directory, get_current_time
-import re
 
 
 class CoderAgent(BaseAgent):

@@ -1,9 +1,7 @@
 """LangChain Agent infrastructure - compatible with LangChain >= 1.0"""
-import json, os, asyncio
 from typing import Optional
 from langchain_core.language_models import BaseChatModel
 from langchain_core.tools import BaseTool
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_openai import ChatOpenAI
 from app.config import settings
 

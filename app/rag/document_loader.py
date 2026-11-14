@@ -1,8 +1,6 @@
 """
 文档加载器 - 支持 txt、md、pdf、json
 """
-import os
-import json
 from pathlib import Path
 from app.config import settings
 from app.rag.vector_store import VectorStore

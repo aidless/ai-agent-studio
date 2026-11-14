@@ -19,7 +19,6 @@ Docker:
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from app.api.routes import router
 from app.config import settings
 from app.rag.loader import DocumentLoader
@@ -42,7 +41,7 @@ async def startup():
     print(f"[RAG] 向量库加载 {count} 个文档块")
     print(f"[API] 文档: http://localhost:{settings.port}/docs")
     print(f"[API] Redoc: http://localhost:{settings.port}/redoc")
-    print(f"[Agents] 可用: research | coder | writer")
+    print("[Agents] 可用: research | coder | writer")
 
 @app.get("/")
 async def root():
