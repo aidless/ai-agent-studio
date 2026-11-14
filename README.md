@@ -266,9 +266,49 @@ python3 eval/run_cases.py --save     # 顺带把结果写进 eval/run-report.jso
 python3 eval/run_cases.py --selftest # 篡改一条期望值，必须变红（19/20，证明这套题会失败）
 ```
 
+**验收判据（acceptance criteria，带阈值）**：`python3 eval/run_cases.py` 必须同时满足两条才算通过——
+通过率 = 100%（20/20 全通过）且退出码为 0；任一条失败（通过率 < 100%）即判为不通过，`make eval`
+以非 0 退出。`--selftest` 是这条判据的反证：它篡改一条期望值，此时必须只报 19/20 并打印失败归因，
+证明这套题在答案变错时**会红**（2026-11-13 实跑：`--selftest` 输出 `19/20 cases passed`、
+`失败归因（按 axis）：config: 1 条 —— CFG-01`，退出码仍为 0 以免污染 CI）。
+
+**统计口径**：本节所有比例的分母都是验收用例条数，n = 20（不是 20 次运行、也不是 20 个模型样本）；
+20/20 全通过的点估计为 1.000，Wilson 95% CI 为 [0.8389, 1.0000]（z = 1.96，n = 20，k = 20）。
+下界 0.8389 是「n 只有 20 时，全绿也不等于 100% 可靠」的量化表达。区间可复算：
+
+```bash
+python3 -c "import math;k,n,z=20,20,1.959963985;p=k/n;d=1+z*z/n;c=(p+z*z/(2*n))/d;h=z*math.sqrt(p*(1-p)/n+z*z/(4*n*n))/d;print(round(max(0,c-h),4), round(min(1,c+h),4))"
+# → 0.8389 1.0
+```
+
+样本量本身也落盘：`eval/run-report.json` 的 `total` = 20、`passed` = 20 就是这两个数，不需要手抄。
+
+**成本 / 墙钟**：跑验收不产生外部调用费用（`eval/run_cases.py` 只 import 标准库 + 本仓模块，
+见该文件 21–29 行，零网络、零 API key），成本口径为 0 USD/次。墙钟是本机 CPython 3.12 上的
+单次读数（`/usr/bin/time -f "wall=%e s"`）：`python3 eval/run_cases.py` → 3.08 s，
+`python3 -m pytest -q` → 2.48 s（pytest 自报 1.71 s）。RAG 接线耗时沿用落盘值
+`results/bench-hash.json`：load 0.0534 s、search 0.0079 s、总 0.5837 s。单次读数不作
+中位数/方差声明。
+
 **数字如何复算**：`eval/run-report.json` 里每条 case 都带 `id` / `axis` / `detail`，
 把 `detail` 与 `cases.jsonl` 的 `verify` 代码一起看，就能从源码复现该数字；
 `--save` 重跑一次即可重建整份报告，不需要手工抄数。
 
 **失败归因**：`run_cases.py` 不只报通过率，失败时按 `axis` 汇总（例如
 `rag.chunking: 1 条 —— CHK-02`），直接指出是哪个模块的哪个口径坏了。
+
+## 引用与边界：哪些是自造，哪些引自何处
+
+本仓把三类内容分开写清楚，避免把「自造」当「引自外部」：
+
+| 内容 | 归属 | 依据 |
+|---|---|---|
+| `docs/api-docs.png`（Swagger 截图） | **本仓自己的**运行截图（our own capture），非外部图片库原图 | `README.md` 该图下方文字；无第三方来源标注 |
+| `data/knowledge/*.md`（5 篇知识库） | 作者整理的演示用语料（自造占位内容），**not from** 任何公开数据集 | `data/knowledge/` 目录，共 5 个文件 |
+| `results/bench-hash.json` 与 README 里全部耗时/计数 | **本仓自测产物**（`bench_rag_wiring.py` / `eval/run_cases.py` 现算），无引用 | 见「RAG 冒烟基准」「验收题库与复算」两节 |
+| `CODE_OF_CONDUCT.md` | **引用**外部 Contributor Covenant（source: contributor-covenant.org） | `CODE_OF_CONDUCT.md:58` 的 `adapted from` |
+| Agent / RAG 的架构与 API 用法 | 参考 LangChain、FastAPI、ChromaDB 官方文档实现的**演示代码**，未逐行移植任何示例 | `requirements.txt`、`app/` |
+
+一句话边界：**除表中明确注明「引用」的两行外，图与数字全部是本仓自造/自测产物；本文不引用任何
+论文、数据集或外部基准分数来支撑本仓效果。** `tests/test_agents.py:4` 也自陈这些测试是 smoke
+scripts，本仓不把它们的高绿当作能力证据。
