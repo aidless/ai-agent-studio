@@ -1,16 +1,10 @@
 """
-AI Agent Studio - 多 Agent 协作平台
-简历项目: LangChain概念 + RAG + Multi-Agent + FastAPI + Tool Use
+Older single-file demo (in-code version 0.2.0-dev).
 
-技术栈:
-- FastAPI: 异步 Web 框架
-- LangChain: Agent 框架理念 (Tool Use / Memory / Chain)
-- RAG: 文档检索 + 上下文增强
-- Multi-Agent: 研究员 + 代码审查 + 报告撰写
-- DeepSeek: LLM 后端
-
-启动: python agent_studio.py
-文档: http://localhost:8000/docs
+Not the package under app/, and not what `make check` measures.
+RAG here is whitespace-token counts in memory, not Chroma and not the
+hash-trigram encoder. LLM calls need DEEPSEEK_API_KEY and are unmeasured.
+There is no Docker config in this repository.
 """
 import os, hashlib
 from datetime import datetime
@@ -20,7 +14,7 @@ from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 import httpx
 
-app = FastAPI(title="AI Agent Studio", version="2.0.0")
+app = FastAPI(title="AI Agent Studio", version="0.2.0-dev")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
 # ----- Settings -----
@@ -198,7 +192,13 @@ async def rag_stats():
 
 @app.get("/api/v1/health")
 async def health():
-    return {"status": "ok", "agents": list(AGENTS.keys()), "rag_docs": len(rag.documents)}
+    return {
+        "status": "up",
+        "llm_probed": False,
+        "agents": list(AGENTS.keys()),
+        "rag_docs": len(rag.documents),
+        "note": "status=up means this process responded. It does not mean the LLM or retrieval works.",
+    }
 
 # ===== Web UI =====
 @app.get("/", response_class=HTMLResponse)

@@ -1,0 +1,76 @@
+{
+  "chunks_loaded": 2,
+  "conclusion": "PARA_EN shares no character trigram with SEM, and its nearest neighbor was lex.md, not sem.md. Semantic retrieval is not supported.",
+  "documents": {
+    "lex.md": "banana banana lexical marker",
+    "sem.md": "研究员在回答之前检索知识库。"
+  },
+  "encoder": "hash-trigram",
+  "exact_sem_cosine": 1.0,
+  "gated": true,
+  "para_en": "An analyst looks up notes first and then replies.",
+  "para_en_cosine_with_sem": 0.034219,
+  "para_en_trigram_overlap_with_sem": 0,
+  "para_zh": "分析员会先查资料再作答。",
+  "para_zh_cosine_with_sem": 0.071429,
+  "para_zh_trigram_overlap_with_sem": 0,
+  "queries": {
+    "exact_lex": {
+      "query": "banana banana lexical marker",
+      "ranked": [
+        {
+          "distance": 0.0,
+          "source": "lex.md"
+        },
+        {
+          "distance": 1.7732,
+          "source": "sem.md"
+        }
+      ],
+      "top1": "lex.md"
+    },
+    "exact_sem": {
+      "query": "研究员在回答之前检索知识库。",
+      "ranked": [
+        {
+          "distance": 0.0,
+          "source": "sem.md"
+        },
+        {
+          "distance": 1.7732,
+          "source": "lex.md"
+        }
+      ],
+      "top1": "sem.md"
+    },
+    "para_en": {
+      "query": "An analyst looks up notes first and then replies.",
+      "ranked": [
+        {
+          "distance": 1.6741,
+          "source": "lex.md"
+        },
+        {
+          "distance": 1.9316,
+          "source": "sem.md"
+        }
+      ],
+      "top1": "lex.md"
+    },
+    "para_zh": {
+      "query": "分析员会先查资料再作答。",
+      "ranked": [
+        {
+          "distance": 1.8488,
+          "source": "lex.md"
+        },
+        {
+          "distance": 1.8571,
+          "source": "sem.md"
+        }
+      ],
+      "top1": "lex.md"
+    }
+  },
+  "semantic_retrieval_supported": false
+}

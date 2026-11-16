@@ -3,11 +3,13 @@
   "n_docs": 5,
   "n_chunks": 12,
   "top_k": 5,
-  "load_seconds": 0.0534,
-  "index_seconds": 0.0,
-  "search_seconds": 0.0079,
-  "total_seconds": 0.5837,
+  "load_seconds": 0.015,
+  "search_seconds": 0.0019,
+  "total_seconds": 0.1761,
   "deterministic": true,
   "l2_norm": 1.0,
-  "note": "hash encoder is NON-SEMANTIC; timings prove wiring, not quality"
+  "python": "3.12.3",
+  "machine": "x86_64",
+  "cpu_count": 4,
+  "note": "One shot on this process. Hash encoder is NON-SEMANTIC; timings are not a performance spec and do not measure quality."
 }

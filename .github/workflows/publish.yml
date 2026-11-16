@@ -1,4 +1,6 @@
 name: Publish to PyPI
+# This repository has no pyproject.toml, setup.py, or setup.cfg.
+# The publish step is skipped, and the project is not on PyPI.
 on:
   workflow_dispatch:
   release:

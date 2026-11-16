@@ -10,7 +10,7 @@ not patched.
 **Please do not open a public issue for security problems.**
 
 Use GitHub's private reporting channel:
-**Security → Report a vulnerability** (https://github.com/ai-agent-studio/security/advisories/new),
+**Security → Report a vulnerability** (https://github.com/aidless/ai-agent-studio/security/advisories/new),
 or contact the maintainer directly.
 
 Please include:
@@ -27,8 +27,6 @@ is maintained for reporters throughout.
 
 ## Scope
 
-This repository is an application that runs locally or on a hosted demo. Reports about dependencies with a published CVE
-are welcome and will be tracked; issues in upstream services are out of scope.
-
-If a deployed demo instance is affected, say which host so the maintainer can rotate
-credentials that were baked into that deployment.
+This repository is a local demo. It does not ship a hosted deployment.
+Reports about dependencies with a published CVE are welcome and will be
+tracked; issues in upstream services are out of scope.

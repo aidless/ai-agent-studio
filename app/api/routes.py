@@ -3,6 +3,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 from typing import Optional
 from app.agents.orchestrator import Orchestrator
+from app.config import settings
 from app.rag.loader import DocumentLoader
 from app.rag.store import VectorStore
 
@@ -38,7 +39,7 @@ async def run_agent(req: AgentRunRequest):
 
 @router.post("/agent/pipeline", tags=["Agent"])
 async def run_pipeline(req: PipelineRequest):
-    """多 Agent Pipeline 协作。默认链条: 研究员 -> 代码审查 -> 报告生成。"""
+    """Run the named steps. HTTP 200 does not mean every step succeeded; read `errors`."""
     result = orch.pipeline(req.task, req.steps)
     return result
 
@@ -76,4 +77,12 @@ async def rag_reload():
 # --- Health ---
 @router.get("/health", tags=["System"])
 async def health():
-    return {"status": "healthy", "app": "AI Agent Studio", "version": "3.0.0"}
+    """Process answered. This handler does not call DeepSeek or the vector index."""
+    return {
+        "status": "up",
+        "llm_configured": bool(settings.deepseek_api_key),
+        "llm_probed": False,
+        "app": settings.app_name,
+        "version": settings.app_version,
+        "note": "status=up means this process responded. It does not mean agents or retrieval work.",
+    }

@@ -7,7 +7,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 class Settings(BaseSettings):
     app_name: str = "AI Agent Studio"
-    app_version: str = "3.0.0"
+    # Unreleased label. There is no git tag, GitHub Release, or PyPI artifact.
+    app_version: str = "0.3.0-dev"
 
     deepseek_api_key: str = os.getenv("DEEPSEEK_API_KEY", "")  # SECURITY: never hardcode API keys; set DEEPSEEK_API_KEY env var
     deepseek_base_url: str = os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com/v1")

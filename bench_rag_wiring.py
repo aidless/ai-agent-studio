@@ -1,19 +1,13 @@
 #!/usr/bin/env python3
 """Benchmark the RAG wiring path with the deterministic hash encoder.
 
-This is a **plumbing benchmark**, not a quality benchmark: it measures how long
-the injectable RAG path takes to load the 5 knowledge docs into 12 chunks, index
-them in ChromaDB, and run a query — all with the deterministic, dependency-free
-hash-trigram encoder. It deliberately avoids sentence-transformers (and the
-~80MB model download) so it runs offline and reproducibly.
-
-Honesty contract (matches README "证据" and PREREG.md §4):
-  - The hash encoder is NON-SEMANTIC. Timings here say nothing about retrieval
-    quality. Only that the load -> store -> retrieve wiring works and is fast.
-  - Results are written to results/bench-hash.json so the numbers are committed
-    and can be re-derived with `python3 bench_rag_wiring.py`.
+Plumbing timing only. It loads data/knowledge with the hash-trigram encoder,
+writes one shot to results/bench-hash.json, and does not score relevance.
+Recompute with `python3 bench_rag_wiring.py`. Seconds are not a spec.
 """
 import json
+import os
+import platform
 import time
 import tempfile
 from pathlib import Path
@@ -34,11 +28,7 @@ def main():
         n_chunks = loader.load_directory()
         t_load = time.perf_counter() - t_load0
 
-        t_idx0 = time.perf_counter()
-        # index is done inside load_directory (chroma add); measure a second
-        # query + determinism probe separately below
-        t_idx = time.perf_counter() - t_idx0
-
+        # Indexing happens inside load_directory. There is no separate index timer.
         t_search0 = time.perf_counter()
         results = loader.search("RAG 是什么", top_k=5)
         t_search = time.perf_counter() - t_search0
@@ -51,18 +41,22 @@ def main():
         import math
         norm = math.sqrt(sum(x * x for x in v1))
 
+    knowledge = Path(settings.knowledge_dir)
+    n_docs = len([p for p in knowledge.iterdir() if p.suffix == ".md"]) if knowledge.is_dir() else 0
     stats = {
         "encoder": "hash-trigram",
-        "n_docs": 5,
+        "n_docs": n_docs,
         "n_chunks": n_chunks,
         "top_k": len(results),
         "load_seconds": round(t_load, 4),
-        "index_seconds": round(t_idx, 4),
         "search_seconds": round(t_search, 4),
         "total_seconds": round(time.perf_counter() - t0, 4),
         "deterministic": deterministic,
         "l2_norm": round(norm, 6),
-        "note": "hash encoder is NON-SEMANTIC; timings prove wiring, not quality",
+        "python": platform.python_version(),
+        "machine": platform.machine(),
+        "cpu_count": os.cpu_count(),
+        "note": "One shot on this process. Hash encoder is NON-SEMANTIC; timings are not a performance spec and do not measure quality.",
     }
     print(json.dumps(stats, indent=2, ensure_ascii=False))
 

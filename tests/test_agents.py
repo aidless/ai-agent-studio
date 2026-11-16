@@ -1,8 +1,8 @@
-"""AI Agent Studio 功能测试
+"""Offline checks for the hash-trigram RAG path and the skipped LLM call.
 
-These are smoke scripts, not unit tests: they print and return None, so pytest collects
-them but they cannot fail on a wrong answer. Do not read a green run here as
-evidence the agents work -- the printouts are the evidence.
+test_rag and test_hash_embedding_is_deterministic_and_normalised assert.
+A green run still does not mean the agents answer well: test_agent calls a
+real model and is skipped when DEEPSEEK_API_KEY is unset.
 
 Import discipline: the application modules are imported INSIDE the test functions,
 never at module level. The mutation-control job installs pytest only (it deliberately
@@ -46,17 +46,24 @@ def _rag_smoke(tmp_dir, set_persist_dir):
     print(f"[OK] encoder: {loader.store.embedding_name}")
 
     results = loader.search("RAG 是什么")
-    print(f"[OK] 检索到 {len(results)} 条相关文档")
+    print(f"[OK] 检索到 {len(results)} 条邻居（哈希编码器，不表示相关）")
     for r in results[:2]:
         print(f"  - {r['content'][:100]}...")
     print()
+    return count, results
 
 
 def test_rag(tmp_path, monkeypatch):
     from app.config import settings
 
-    _rag_smoke(str(tmp_path / "chroma"),
-               lambda d: monkeypatch.setattr(settings, "chroma_persist_dir", d))
+    count, results = _rag_smoke(
+        str(tmp_path / "chroma"),
+        lambda d: monkeypatch.setattr(settings, "chroma_persist_dir", d),
+    )
+    # Wiring only. Neighbors are not graded for relevance.
+    assert count == 12
+    assert len(results) == 5
+    assert all(r.get("content") for r in results)
 
 
 def test_hash_embedding_is_deterministic_and_normalised():
@@ -88,11 +95,10 @@ def test_agent(task_type: str = "research",
     print("=" * 50)
     orch = Orchestrator()
     result = orch.run(task_type, content)
-    if "error" in result:
-        print(f"[FAIL] {result['error']}")
-    else:
-        print(f"[OK] Agent: {result['agent']}")
-        print(f"[输出] {result['result'][:500]}...")
+    assert "error" not in result, result
+    assert not str(result.get("result", "")).startswith("[Agent error]"), result
+    print(f"[OK] Agent: {result['agent']}")
+    print(f"[输出] {result['result'][:500]}...")
     print()
 
 
