@@ -4,12 +4,21 @@ from app.agents.base import BaseAgent
 from app.rag.loader import DocumentLoader
 from app.tools.file_tools import save_file, get_current_time, read_file
 
-doc_loader = DocumentLoader()
+_loader = None
+
+
+def _context_store():
+    """Open Chroma on first search, not at import."""
+    global _loader
+    if _loader is None:
+        _loader = DocumentLoader()
+    return _loader
+
 
 @tool
 def search_context(query: str) -> str:
     """搜索知识库获取项目上下文信息。用于撰写报告时参考项目文档。"""
-    results = doc_loader.search(query, top_k=3)
+    results = _context_store().search(query, top_k=3)
     if not results:
         return "无所知库内容"
     return "\n---\n".join([f"[{r['metadata'].get('source','?')}] {r['content'][:400]}" for r in results])

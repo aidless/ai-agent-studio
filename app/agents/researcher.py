@@ -4,12 +4,21 @@ from app.agents.base import BaseAgent
 from app.rag.loader import DocumentLoader
 from app.tools.file_tools import read_file, list_directory, get_current_time
 
-doc_loader = DocumentLoader()
+_loader = None
+
+
+def _knowledge():
+    """Open Chroma on first search, not at import. Import used to touch data/chroma."""
+    global _loader
+    if _loader is None:
+        _loader = DocumentLoader()
+    return _loader
+
 
 @tool
 def search_knowledge(query: str) -> str:
     """搜索本地知识库，获取相关文档片段。参数: query - 搜索关键词或问题。返回相关知识库内容。"""
-    results = doc_loader.search(query, top_k=5)
+    results = _knowledge().search(query, top_k=5)
     if not results:
         return "知识库中未找到相关内容，请尝试其他关键词。"
     formatted = []

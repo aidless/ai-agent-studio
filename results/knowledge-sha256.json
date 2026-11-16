@@ -1,0 +1,10 @@
+{
+  "algorithm": "sha256",
+  "files": {
+    "data/knowledge/api_design.md": "3ddd4be15dfeaa2ad4e841a9d2a3350b64ce19d121551e9f9304016638979b70",
+    "data/knowledge/coding_standards.md": "a07bae0d575ec9d0e4413d5a7301f873266789396cafbfed2b2d49199f3c05cf",
+    "data/knowledge/langchain_best_practices.md": "e2d9413cb19c68e5e1d2b079547a03e0b0fe9da0095fc591e6ce50da5faf5a25",
+    "data/knowledge/project_architecture.md": "32723c268946a06235943eb90e020e01e3425a57ab446c571177328ff40824ec",
+    "data/knowledge/project_overview.md": "d40194cb2f91ba1f051b3fe6f36490bc6f24a38fd02063b9d638def22759ba81"
+  }
+}

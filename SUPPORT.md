@@ -4,10 +4,10 @@
 
 | I want to... | Do this |
 |---|---|
-| Report a bug | [Open an issue](https://github.com/ai-agent-studio/issues/new/choose) using the bug template |
-| Suggest a feature | [Open an issue](https://github.com/ai-agent-studio/issues/new/choose) using the feature template |
+| Report a bug | [Open an issue](https://github.com/aidless/ai-agent-studio/issues/new/choose) using the bug template |
+| Suggest a feature | [Open an issue](https://github.com/aidless/ai-agent-studio/issues/new/choose) using the feature template |
 | Report a security problem | **Private channel** in [SECURITY.md](SECURITY.md) — do not open a public issue |
-| Ask how to use this | [Open a discussion](https://github.com/ai-agent-studio/discussions) if enabled, otherwise an issue |
+| Ask how to use this | Open an issue. GitHub Discussions are not enabled on this repository. |
 
 ## Before you report a bug
 

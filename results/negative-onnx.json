@@ -1,0 +1,78 @@
+{
+  "chromadb_version": "0.5.23",
+  "conclusion": "One synthetic pair on Chroma's default embedder (no embedding_function passed). Chinese paraphrase top-1 was sem. English paraphrase top-1 was lex. n=1 pair; do not generalize. An unrelated query still receives a neighbor because the index always returns one.",
+  "gated": false,
+  "note": "Not part of make check. First use downloads Chroma's ONNX model (about 79MB). On chromadb 0.5.23 that file was all-MiniLM-L6-v2.",
+  "queries": {
+    "exact_lex": {
+      "query": "banana banana lexical marker",
+      "ranked": [
+        {
+          "distance": 0.0,
+          "source": "lex"
+        },
+        {
+          "distance": 1.7214,
+          "source": "sem"
+        }
+      ],
+      "top1": "lex"
+    },
+    "exact_sem": {
+      "query": "研究员在回答之前检索知识库。",
+      "ranked": [
+        {
+          "distance": 0.0,
+          "source": "sem"
+        },
+        {
+          "distance": 1.7214,
+          "source": "lex"
+        }
+      ],
+      "top1": "sem"
+    },
+    "para_en": {
+      "query": "An analyst looks up notes first and then replies.",
+      "ranked": [
+        {
+          "distance": 1.6691,
+          "source": "lex"
+        },
+        {
+          "distance": 1.8327,
+          "source": "sem"
+        }
+      ],
+      "top1": "lex"
+    },
+    "para_zh": {
+      "query": "分析员会先查资料再作答。",
+      "ranked": [
+        {
+          "distance": 0.7094,
+          "source": "sem"
+        },
+        {
+          "distance": 1.6199,
+          "source": "lex"
+        }
+      ],
+      "top1": "sem"
+    },
+    "unrelated": {
+      "query": "量子光合作用食谱",
+      "ranked": [
+        {
+          "distance": 1.1039,
+          "source": "sem"
+        },
+        {
+          "distance": 1.691,
+          "source": "lex"
+        }
+      ],
+      "top1": "sem"
+    }
+  }
+}

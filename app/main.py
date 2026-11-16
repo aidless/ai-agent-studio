@@ -1,20 +1,16 @@
 """
-AI Agent Studio v3.0 - 多 Agent 协作平台
-=========================================
-FastAPI + LangChain + ChromaDB + DeepSeek
+AI Agent Studio local demo (version string: settings.app_version).
 
-架构层次:
-  api/       RESTful 接口层
-  agents/    Agent 层 (Researcher, Coder, Writer)
-  rag/       RAG 层 (ChromaDB 向量存储 + 文档检索)
-  tools/     Tool 层 (文件系统、代码分析)
+Importing this module imports app.api.routes, which constructs the
+orchestrator and therefore a chat client. DEEPSEEK_API_KEY must be
+non-empty or that construction raises openai.OpenAIError. A placeholder
+value only gets past construction; it does not measure model output.
 
-启动:
-  python -m app.main
-  uvicorn app.main:app --reload --port 8000
+Startup indexes data/knowledge with app.rag.loader (Chroma's default
+ONNX embedder; first use downloads a model). That is not the offline
+hash-trigram path `make check` runs.
 
-Docker:
-  docker compose up -d
+This repository has no Dockerfile and no compose file.
 """
 import uvicorn
 from fastapi import FastAPI
@@ -26,7 +22,7 @@ from app.rag.loader import DocumentLoader
 app = FastAPI(
     title=settings.app_name,
     version=settings.app_version,
-    description="多 Agent 协作平台 - LangChain + ChromaDB RAG + DeepSeek LLM",
+    description="Local demo. Offline checks do not measure semantic search or LLM answers. Not a release.",
     docs_url="/docs",
     redoc_url="/redoc"
 )

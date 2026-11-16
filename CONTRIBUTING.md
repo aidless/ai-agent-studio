@@ -7,17 +7,18 @@ Thanks for your interest in improving this repository.
 ```bash
 git clone https://github.com/aidless/ai-agent-studio.git
 cd ai-agent-studio
-pip install -r requirements.txt   # if present
+pip install -r requirements-dev.txt
 ```
 
 ## Verifying your change
 
 ```bash
-python3 -m pytest -q
+make check
 ```
 
-If the repository has a `Makefile`, `make check` or the closest equivalent runs the same
-checks as CI. Please run it before opening a pull request.
+`make check` is the same offline gate as the CI workflow: hash negative probe,
+eval cases, the eval selftest, and pytest. It does not call DeepSeek and does
+not download an embedding model. Please run it before opening a pull request.
 
 ## Pull requests
 
